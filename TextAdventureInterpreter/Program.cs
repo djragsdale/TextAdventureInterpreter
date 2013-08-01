@@ -66,35 +66,67 @@ namespace TextAdventureInterpreter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Please type your command.");
-            string myCommand = Console.ReadLine();
-            object[] parameters = myCommand.Split(' ');
-            if (parameters.Length == 3)
+            bool running = true;
+            int runCount = 0;
+            Console.WriteLine("You appear in a locked room. You can see a knife, window, chest, and door.");
+            while (running == true)
             {
-                Type type = typeof(AdventureCommand);
-                MethodInfo info = type.GetMethod(parameters[0].ToString());
-                Console.WriteLine("Thank you, your result is coming right up!");
-                try
+                runCount++;
+                if (runCount > 1)
                 {
-                    Console.WriteLine("{0}", info.Invoke(null, new object[] { Convert.ToInt32(parameters[1]), Convert.ToInt32(parameters[2]) }));
+                    Console.WriteLine("You are still in the room what would you like to do?");
                 }
-                catch
+                string myCommand = Console.ReadLine();
+                object[] parameters = myCommand.Split(' ');
+                if (parameters.Length == 3)
                 {
-                    Console.WriteLine("Command not found. Please reformat your request and try again.");
+                    Type type = typeof(AdventureCommand);
+                    MethodInfo info = type.GetMethod(parameters[0].ToString());
+                    Console.WriteLine("Thank you, your result is coming right up!");
+                    try
+                    {
+                        Console.WriteLine("{0}", info.Invoke(null, new object[] { Convert.ToInt32(parameters[1]), Convert.ToInt32(parameters[2]) }));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Command not found. Please reformat your request and try again.");
+                    }
                 }
-            }
-            else if (parameters.Length == 2)
-            {
-                Type type = typeof(AdventureCommand);
-                MethodInfo info = type.GetMethod(parameters[0].ToString());
-                Console.WriteLine("Your request is being processed.");
-                try
+                else if (parameters.Length == 2)
                 {
-                    Console.WriteLine("{0}", info.Invoke(null, new object[] { parameters[1].ToString() }));
+                    Type type = typeof(AdventureCommand);
+                    MethodInfo info = type.GetMethod(parameters[0].ToString());
+                    Console.WriteLine("Your request is being processed.");
+                    try
+                    {
+                        Console.WriteLine("{0}", info.Invoke(null, new object[] { parameters[1].ToString() }));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("I'm sorry, please reformat your request and try again.");
+                    }
                 }
-                catch
+                else if (parameters.Length == 1)
                 {
-                    Console.WriteLine("I'm sorry, please reformat your request and try again.");
+                    if (myCommand.Equals("exit", StringComparison.Ordinal))
+                    {
+                        Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
+                        running = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine("That didn't work, please try again.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Syntax error...system fault...stack overflow...WHAT DID YOU DO?????");
+                }
+
+                if (runCount >10)
+                {
+                    Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
+                    running = false;
                 }
             }
         }
