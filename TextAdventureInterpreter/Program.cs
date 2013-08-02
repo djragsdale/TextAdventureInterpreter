@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Timers;
 
 namespace TextAdventureInterpreter
 {
@@ -60,6 +61,63 @@ namespace TextAdventureInterpreter
             }
             return result;
         }
+
+        
+    }
+
+    class Pause
+    {
+        Timer pauseTimer = new Timer();
+        public bool asleep = false;
+        private string messageString;
+        private double secondsDouble;
+
+        public Pause(double seconds, string message)
+        {
+            asleep = true;
+            secondsDouble = seconds;
+            double inMilliseconds = secondsDouble * 1000;
+            messageString = message;
+            pauseTimer.Interval = inMilliseconds;
+            ElapsedEventHandler pauseHandler = new ElapsedEventHandler(pauseTimer_Tick);
+            pauseTimer.Elapsed += pauseHandler;
+            pauseTimer.Start();
+            while (asleep == true)
+            {
+            }
+        }
+
+        public Pause(Pause anotherPause)
+        {
+            Pause newPause = new Pause(anotherPause.getSeconds(), anotherPause.getMessage());
+        }
+
+        private void pauseTimer_Tick(object sender, EventArgs e)
+        {
+            Console.WriteLine(messageString);
+            pauseTimer.Stop();
+            asleep = false;
+        }
+
+        private class PauseArgs : EventArgs
+        {
+            public string messageString;
+
+            public PauseArgs(string message)
+            {
+                messageString = message;
+            }
+        }
+
+        public string getMessage()
+        {
+            return messageString;
+        }
+
+        public double getSeconds()
+        {
+            return secondsDouble;
+        }
     }
 
     class Program
@@ -68,7 +126,13 @@ namespace TextAdventureInterpreter
         {
             bool running = true;
             int runCount = 0;
+            Console.WriteLine("Tick...");
+            Pause pause2 = new Pause(1, "tock...");
+            Pause pause3 = new Pause(1, "tick...");
+            Pause pause4 = new Pause(1, "tock.");
+            Pause pause5 = new Pause(1, "");
             Console.WriteLine("You appear in a locked room. You can see a knife, window, chest, and door.");
+
             while (running == true)
             {
                 runCount++;
