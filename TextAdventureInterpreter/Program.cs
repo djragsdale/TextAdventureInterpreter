@@ -72,15 +72,21 @@ namespace TextAdventureInterpreter
         private string messageString;
         private double secondsDouble;
 
+        //private delegate void PauseHandler(object sender, EventArgs e);                   //class-level variable
+        
         public Pause(double seconds, string message)
         {
             asleep = true;
+            //PauseArgs myPauseArgs = new PauseArgs("testing");                             //lambda expression
+            EventArgs e = new EventArgs();
             secondsDouble = seconds;
             double inMilliseconds = secondsDouble * 1000;
             messageString = message;
             pauseTimer.Interval = inMilliseconds;
-            ElapsedEventHandler pauseHandler = new ElapsedEventHandler(pauseTimer_Tick);
-            pauseTimer.Elapsed += pauseHandler;
+            //PauseHandler pauseHandler = new PauseHandler(pauseTimer_Tick);                //class-level variable
+            //pauseTimer.Elapsed += pauseHandler;                                           //class-level variable
+            //pauseTimer.Elapsed += (sender, args) => pauseTimer_Tick(sender, myPauseArgs); //lambda expression
+            pauseTimer.Elapsed += delegate { pauseTimer_Tick(pauseTimer, e, message); };
             pauseTimer.Start();
             while (asleep == true)
             {
@@ -92,22 +98,29 @@ namespace TextAdventureInterpreter
             Pause newPause = new Pause(anotherPause.getSeconds(), anotherPause.getMessage());
         }
 
-        private void pauseTimer_Tick(object sender, EventArgs e)
+        private void pauseTimer_Tick(object sender, EventArgs e, string message)
         {
-            Console.WriteLine(messageString);
+            Console.WriteLine(message);
             pauseTimer.Stop();
             asleep = false;
         }
 
-        private class PauseArgs : EventArgs
-        {
-            public string messageString;
+        //private void pauseTimer_Tick(object sender, PauseArgs e)                          //lambda expression
+        //{
+        //    Console.WriteLine(e.messageString);
+        //    pauseTimer.Stop();
+        //    asleep = false;
+        //}
 
-            public PauseArgs(string message)
-            {
-                messageString = message;
-            }
-        }
+        //private class PauseArgs : EventArgs                                               //lambda expression
+        //{
+        //    public string messageString;
+
+        //    public PauseArgs(string message)
+        //    {
+        //        messageString = message;
+        //    }
+        //}
 
         public string getMessage()
         {
