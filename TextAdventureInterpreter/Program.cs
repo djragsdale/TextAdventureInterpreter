@@ -147,7 +147,8 @@ namespace TextAdventureInterpreter
             Pause pause4 = new Pause(1, "tock.");
             Pause pause5 = new Pause(1, "");
             Console.WriteLine("You appear in a locked room. You can see a knife, window, chest, and door.");
-
+            Console.WriteLine("");
+                    
             while (running == true)
             {
                 runCount++;
@@ -165,24 +166,27 @@ namespace TextAdventureInterpreter
                     try
                     {
                         Console.WriteLine("{0}", info.Invoke(null, new object[] { Convert.ToInt32(parameters[1]), Convert.ToInt32(parameters[2]) }));
+                        Console.WriteLine("");
                     }
                     catch
                     {
                         Console.WriteLine("Command not found. Please reformat your request and try again.");
+                        Console.WriteLine("");
                     }
                 }
                 else if (parameters.Length == 2)
                 {
                     Type type = typeof(AdventureCommand);
                     MethodInfo info = type.GetMethod(parameters[0].ToString());
-                    Console.WriteLine("Your request is being processed.");
                     try
                     {
                         Console.WriteLine("{0}", info.Invoke(null, new object[] { parameters[1].ToString() }));
+                        Console.WriteLine("");
                     }
                     catch
                     {
                         Console.WriteLine("I'm sorry, please reformat your request and try again.");
+                        Console.WriteLine("");
                     }
                 }
                 else if (parameters.Length == 1)
@@ -194,11 +198,13 @@ namespace TextAdventureInterpreter
                     else
                     {
                         Console.WriteLine("That didn't work, please try again.");
+                        Console.WriteLine("");
                     }
                 }
                 else
                 {
                     Console.WriteLine("Syntax error...system fault...stack overflow...WHAT DID YOU DO?????");
+                    Console.WriteLine("");
                 }
 
                 if (runCount > 10)
