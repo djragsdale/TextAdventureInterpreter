@@ -54,7 +54,7 @@ namespace TextAdventureInterpreter
             string result = objectName + " is not found. Please reformat your request and try again.";
             for (int i = 0; i < newRoom.listContents().Count; i++)
             {
-                if (newRoom.roomObjects[i, 0].Equals(objectName, StringComparison.Ordinal))
+                if (String.Compare(newRoom.roomObjects[i, 0], objectName, StringComparison.Ordinal) == 0)
                 {
                     result = newRoom.roomObjects[i, 1];
                 }
@@ -189,8 +189,7 @@ namespace TextAdventureInterpreter
                 {
                     if (myCommand.Equals("exit", StringComparison.Ordinal))
                     {
-                        Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
-                        running = false;
+                        Dispose(ref running);
                     }
                     else
                     {
@@ -204,10 +203,16 @@ namespace TextAdventureInterpreter
 
                 if (runCount > 10)
                 {
-                    Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
-                    running = false;
+                    Dispose(ref running);
                 }
             }
+        }
+
+        static void Dispose(ref bool trueToFalse)
+        {
+            Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
+            Pause pause = new Pause(3, "");
+            trueToFalse = false;
         }
     }
 }
