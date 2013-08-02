@@ -1,0 +1,19 @@
+Notes for TextAdventureInterpreter:
+- add a PauseFor(double duration) function that pauses for a set 
+amount of seconds (inside converted to milliseconds then uses a 
+timer object.
+- create relationships for objects, e.g. whether they can have 
+other objects on them.
+- create classes for nouns, verbs, conjunctions, prepositions, 
+and adjectives.
+- create actions with an object and subject, then let them be 
+recognized.
+- create rules for joining nouns with nouns or nouns with 
+adjectives if they are next to each other in the sequence.
+- have the maps be text files that can be easily readable 
+so they can be created elsewhere then imported.
+- have the ability to merge rooms in the map creator.
+- have operators in the requirements editor, so they things 
+either must exist or must not exist.
+- have an alchemy window, essentially what third object is
+created by combining two other objects.
