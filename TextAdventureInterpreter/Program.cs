@@ -7,7 +7,7 @@ namespace TextAdventureInterpreter
 {
     class AdventureRoom
     {
-        public string[,] roomObjects = new string[4,2];
+        public string[,] roomObjects = new string[4, 2];
 
         public AdventureRoom()
         {
@@ -20,7 +20,7 @@ namespace TextAdventureInterpreter
             this.roomObjects[3, 0] = "door";
             this.roomObjects[3, 1] = "The door appears to be locked...apparently...";
         }
-        
+
         public List<string> listContents()
         {
             List<string> contents = new List<string>();
@@ -62,7 +62,7 @@ namespace TextAdventureInterpreter
             return result;
         }
 
-        
+
     }
 
     class Pause
@@ -72,21 +72,21 @@ namespace TextAdventureInterpreter
         private string messageString;
         private double secondsDouble;
 
-        //private delegate void PauseHandler(object sender, EventArgs e);                   //class-level variable
-        
+        //private delegate void PauseHandler(object sender, EventArgs e);                           //class-level variable
+
         public Pause(double seconds, string message)
         {
             asleep = true;
-            //PauseArgs myPauseArgs = new PauseArgs("testing");                             //lambda expression
-            EventArgs e = new EventArgs();
+            //PauseArgs myPauseArgs = new PauseArgs("testing");                                     //lambda expression
+            EventArgs e = new EventArgs();                                                          //delegates
             secondsDouble = seconds;
             double inMilliseconds = secondsDouble * 1000;
-            messageString = message;
+            messageString = message;                                                                //class-level variable
             pauseTimer.Interval = inMilliseconds;
-            //PauseHandler pauseHandler = new PauseHandler(pauseTimer_Tick);                //class-level variable
-            //pauseTimer.Elapsed += pauseHandler;                                           //class-level variable
-            //pauseTimer.Elapsed += (sender, args) => pauseTimer_Tick(sender, myPauseArgs); //lambda expression
-            pauseTimer.Elapsed += delegate { pauseTimer_Tick(pauseTimer, e, message); };
+            //PauseHandler pauseHandler = new PauseHandler(pauseTimer_Tick);                        //class-level variable
+            //pauseTimer.Elapsed += pauseHandler;                                                   //class-level variable
+            //pauseTimer.Elapsed += (sender, args) => pauseTimer_Tick(pauseTimer, myPauseArgs);     //lambda expression
+            pauseTimer.Elapsed += delegate { pauseTimer_Tick(pauseTimer, e, message); };            //delegates
             pauseTimer.Start();
             while (asleep == true)
             {
@@ -98,21 +98,23 @@ namespace TextAdventureInterpreter
             Pause newPause = new Pause(anotherPause.getSeconds(), anotherPause.getMessage());
         }
 
-        private void pauseTimer_Tick(object sender, EventArgs e, string message)
+        private void pauseTimer_Tick(Timer sender, EventArgs e, string message)                     //delegates
         {
             Console.WriteLine(message);
-            pauseTimer.Stop();
+            //pauseTimer.Stop();
+            sender.Stop();
             asleep = false;
         }
 
-        //private void pauseTimer_Tick(object sender, PauseArgs e)                          //lambda expression
+        //private void pauseTimer_Tick(Timer sender, PauseArgs e)                                   //lambda expression
         //{
         //    Console.WriteLine(e.messageString);
-        //    pauseTimer.Stop();
+        //    //pauseTimer.Stop();
+        //    sender.Stop();
         //    asleep = false;
         //}
 
-        //private class PauseArgs : EventArgs                                               //lambda expression
+        //private class PauseArgs : EventArgs                                                       //lambda expression
         //{
         //    public string messageString;
 
@@ -200,7 +202,7 @@ namespace TextAdventureInterpreter
                     Console.WriteLine("Syntax error...system fault...stack overflow...WHAT DID YOU DO?????");
                 }
 
-                if (runCount >10)
+                if (runCount > 10)
                 {
                     Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
                     running = false;
