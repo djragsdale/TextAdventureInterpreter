@@ -36,6 +36,20 @@ namespace TextAdventureInterpreter
 
     static class AdventureCommand
     {
+        public string[][] commandsDebug = new string[3][2];
+
+        public AdventureCommand()
+        {
+            //[n][0] = command
+            //[n][1][n][0] = object
+            //[n][1][n][1] = message
+            commandsDebug[0][0] = "take";
+            //commandsDebug[0][1] = new string[1][0];
+ 
+            commandsDebug[1][0] = "open";
+            commandsDebug[2][0] = "go";
+        }
+
         public static int add(int int1, int int2)
         {
             Console.WriteLine("Add {0} to {1}", int1, int2);
@@ -87,6 +101,21 @@ namespace TextAdventureInterpreter
             //pauseTimer.Elapsed += pauseHandler;                                                   //class-level variable
             //pauseTimer.Elapsed += (sender, args) => pauseTimer_Tick(pauseTimer, myPauseArgs);     //lambda expression
             pauseTimer.Elapsed += delegate { pauseTimer_Tick(pauseTimer, e, message); };            //delegates
+            pauseTimer.Start();
+            while (asleep == true)
+            {
+            }
+        }
+
+        public Pause(double seconds)
+        {
+            asleep = true;
+            EventArgs e = new EventArgs();
+            secondsDouble = seconds;
+            double inMilliseconds = secondsDouble * 1000;
+            messageString = "";
+            pauseTimer.Interval = inMilliseconds;
+            pauseTimer.Elapsed += delegate { pauseTimer_Tick(pauseTimer, e, messageString); };
             pauseTimer.Start();
             while (asleep == true)
             {
@@ -145,7 +174,7 @@ namespace TextAdventureInterpreter
             Pause pause2 = new Pause(1, "tock...");
             Pause pause3 = new Pause(1, "tick...");
             Pause pause4 = new Pause(1, "tock.");
-            Pause pause5 = new Pause(1, "");
+            Pause pause5 = new Pause(1);
             Console.WriteLine("You appear in a locked room. You can see a knife, window, chest, and door.");
             Console.WriteLine("");
                     
@@ -216,8 +245,9 @@ namespace TextAdventureInterpreter
 
         static void Dispose(ref bool trueToFalse)
         {
+            Console.WriteLine("");
             Console.WriteLine("Thank you for playing TextAdventure...Interpreter...");
-            Pause pause = new Pause(3, "");
+            Pause pause = new Pause(3);
             trueToFalse = false;
         }
     }
