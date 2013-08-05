@@ -3,6 +3,105 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Timers;
 
+
+class GlobalState
+{
+    private AdventureRoom currentAdventureRoom;
+    //private string currentRoom;
+    private int currentRoomState;
+    private string exitMessage;
+    private string username;
+    private string saveName;
+
+    public GlobalState()
+    {
+    }
+
+    public GlobalState(AdventureRoom room)
+    {
+        currentAdventureRoom = room;
+    }
+
+    public string CurrentRoom
+    {
+        get
+        {
+            return currentAdventureRoom.ToString();
+        }
+        set
+        {
+            try
+            {
+                currentAdventureRoom = new AdventureRoom(value, currentRoomState);
+            }
+            catch
+            {
+                currentAdventureRoom = new AdventureRoom(value, 0);
+            }
+        }
+    }
+
+    public int CurrentRoomState
+    {
+        get
+        {
+            return currentRoomState;
+        }
+        set
+        {
+            try
+            {
+                currentAdventureRoom.roomState = value;
+            }
+            catch
+            {
+                currentRoomState = value;
+            }
+        }
+    }
+
+    public string ExitMessage
+    {
+        get
+        {
+            return exitMessage;
+        }
+        set
+        {
+            exitMessage = value;
+        }
+    }
+
+    public string Username
+    {
+        get
+        {
+            return username;
+        }
+        set
+        {
+            username = value;
+        }
+    }
+
+    public string SaveName
+    {
+        get
+        {
+            return saveName;
+        }
+        set
+        {
+            saveName = value;
+        }
+    }
+
+    public void setRoom(AdventureRoom room)
+    {
+        currentAdventureRoom = room;
+    }
+}
+
 class AdventureRoom
 {
     private string roomName;
@@ -59,16 +158,21 @@ class AdventureRoom
     {
         roomState = state;
     }
+
+    public override string ToString()
+    {
+        return roomName;
+    }
 }
 
 class AdventureCommandCatalog
 {
+    private GlobalState globalState = new GlobalState();
     private List<AdventureCommand> commandList = new List<AdventureCommand>();
-    private string currentRoom;
-    private string currentRoomState;
 
-    public AdventureCommandCatalog()
+    public AdventureCommandCatalog(string exitMessage)
     {
+        globalState.ExitMessage = exitMessage;
         addDummyCommands();
     }
 
@@ -149,10 +253,7 @@ class AdventureCommandCatalog
             MethodInfo info = type.GetMethod(parameters[0]);
             try
             {
-                string[] nameArgs = new string[2] { "currentRoom", currentRoom };
-                string[] stateArgs = new string[2] { "currentRoomState", currentRoomState.ToString() };
-                string[][] commandArgs = new string[2] { nameArgs, stateArgs };
-                result = info.Invoke(null, new object[2] { nameArgs, stateArgs } ).ToString();
+                result = info.Invoke(null, new object[1] { globalState } ).ToString();
             }
             catch
             {
@@ -215,7 +316,15 @@ class AdventureCommandCatalog
     public void Dispose(ref bool trueToFalse)
     {
         Console.WriteLine("");
-        Console.WriteLine("Thank you for playing.");
+        Console.WriteLine(globalState.ExitMessage);
+        Pause pause = new Pause(3);
+        trueToFalse = false;
+    }
+    //overload for custom message
+    public void Dispose(ref bool trueToFalse, string exitMessage)
+    {
+        Console.WriteLine("");
+        Console.WriteLine(exitMessage);
         Pause pause = new Pause(3);
         trueToFalse = false;
     }
@@ -239,17 +348,18 @@ class AdventureCommand
         name = commandName;
     }
 
-    public static int add(int int1, int int2)
-    {
-        Console.WriteLine("Add {0} to {1}", int1, int2);
-        return (int1 + int2);
-    }
+    ////originally part of the parser test
+    //public static int add(int int1, int int2)
+    //{
+    //    Console.WriteLine("Add {0} to {1}", int1, int2);
+    //    return (int1 + int2);
+    //}
 
-    public static int subtract(int int1, int int2)
-    {
-        Console.WriteLine("Subtract {0} from {1}", int2, int1);
-        return (int1 - int2);
-    }
+    //public static int subtract(int int1, int int2)
+    //{
+    //    Console.WriteLine("Subtract {0} from {1}", int2, int1);
+    //    return (int1 - int2);
+    //}
 
     ////THIS IS DEPRECATED.
     //public string examine(string objectName)
@@ -268,20 +378,20 @@ class AdventureCommand
     //}
 
     //has not been added
-    public string save(string[] args)
+    public string save(GlobalState globalState)
     {
         //Where do we put the name to save?
         string result = "Game saving is not configured yet."; //Later this should actually save the game
         return result;
     }
 
-    public string look(string[] args)
+    public string look(GlobalState globalState)
     {
         string result = "Either nothing is visible or you are nowhere.";
         try
         {
-            AdventureRoom newRoom = new AdventureRoom(args[0], Convert.ToInt32(args[1])); //[0] is name, [1] is state
-            result = newRoom.getDescription(Convert.ToInt32(args[1]));
+            AdventureRoom newRoom = new AdventureRoom(globalState.CurrentRoom, globalState.CurrentRoomState); //[0] is name, [1] is state
+            result = newRoom.getDescription(globalState.CurrentRoomState);
         }
         catch
         {
