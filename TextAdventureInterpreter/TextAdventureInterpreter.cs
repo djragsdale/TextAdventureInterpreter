@@ -47,9 +47,9 @@ class AdventureRoom
     {
         List<string> contents = new List<string>();
 
-        for (int i = 0; i < this.roomObjects.GetLength(0); i++)
+        for (int i = 0; i < roomObjects.GetLength(0); i++)
         {
-            contents.Add(this.roomObjects[i, 0]);
+            contents.Add(roomObjects[i, 0]);
         }
 
         return contents;
@@ -65,7 +65,7 @@ class AdventureCommandCatalog
 {
     private List<AdventureCommand> commandList = new List<AdventureCommand>();
     private string currentRoom;
-    private int currentRoomState;
+    private string currentRoomState;
 
     public AdventureCommandCatalog()
     {
@@ -145,15 +145,34 @@ class AdventureCommandCatalog
         else if (parameters.Length == 1)
         {
             //invoke a method instead of searching for commands
-            //add "look" as a command to re-display AdventureRoom description
-            if (String.Compare(command, "exit", StringComparison.Ordinal) == 0)
+            Type type = typeof(AdventureCommand);
+            MethodInfo info = type.GetMethod(parameters[0]);
+            try
             {
-                Dispose(ref falseToClose);
+                string[] nameArgs = new string[2] { "currentRoom", currentRoom };
+                string[] stateArgs = new string[2] { "currentRoomState", currentRoomState.ToString() };
+                string[][] commandArgs = new string[2] { nameArgs, stateArgs };
+                result = info.Invoke(null, new object[2] { nameArgs, stateArgs } ).ToString();
             }
-            else
+            catch
             {
-                result = "That didn't work, please try again.";
+                if (String.Compare(command, "exit", StringComparison.Ordinal) == 0)
+                {
+                    Dispose(ref falseToClose);
+                }
+                else
+                {
+                    result = "That didn't work, please try again.";
+                }
             }
+            //The old style
+            //Type type = typeof(AdventureCommand);
+            //MethodInfo info = type.GetMethod(parameters[0].ToString());
+            //try
+            //{
+            //    Console.WriteLine("{0}", info.Invoke(null, new object[] { parameters[1].ToString() }));
+            //    Console.WriteLine("");
+            //}
         }
         else
         {
@@ -200,6 +219,13 @@ class AdventureCommandCatalog
         Pause pause = new Pause(3);
         trueToFalse = false;
     }
+
+    //NOT FINISHED YET!!!!!
+    private bool RoomExists(string name)
+    {
+        bool result = true;
+        return result;
+    }
 }
 
 class AdventureCommand
@@ -225,24 +251,42 @@ class AdventureCommand
         return (int1 - int2);
     }
 
-    public static string examine(string objectName)
+    ////THIS IS DEPRECATED.
+    //public string examine(string objectName)
+    //{
+    //    //how does the state get passed to here?
+    //    AdventureRoom newRoom = new AdventureRoom("room", 0);
+    //    string result = objectName + " is not found. Please reformat your request and try again.";
+    //    for (int i = 0; i < newRoom.listContents().Count; i++)
+    //    {
+    //        if (String.Compare(newRoom.roomObjects[i, 0], objectName, StringComparison.Ordinal) == 0)
+    //        {
+    //            result = newRoom.roomObjects[i, 1];
+    //        }
+    //    }
+    //    return result;
+    //}
+
+    //has not been added
+    public string save(string[] args)
     {
-        AdventureRoom newRoom = new AdventureRoom("room", 0);
-        string result = objectName + " is not found. Please reformat your request and try again.";
-        for (int i = 0; i < newRoom.listContents().Count; i++)
-        {
-            if (String.Compare(newRoom.roomObjects[i, 0], objectName, StringComparison.Ordinal) == 0)
-            {
-                result = newRoom.roomObjects[i, 1];
-            }
-        }
+        //Where do we put the name to save?
+        string result = "Game saving is not configured yet."; //Later this should actually save the game
         return result;
     }
 
-    //has not been added
-    public static string save(string saveName)
+    public string look(string[] args)
     {
-        string result = "Game has been saved."; //Later this should actually save the game
+        string result = "Either nothing is visible or you are nowhere.";
+        try
+        {
+            AdventureRoom newRoom = new AdventureRoom(args[0], Convert.ToInt32(args[1])); //[0] is name, [1] is state
+            result = newRoom.getDescription(Convert.ToInt32(args[1]));
+        }
+        catch
+        {
+
+        }
         return result;
     }
 
